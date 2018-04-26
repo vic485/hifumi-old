@@ -43,6 +43,7 @@ namespace Hifumi.Models
         public ulong MuteRole { get; set; }
         public bool AntiInvite { get; set; }
         public int MaxWarnings { get; set; }
+        public ulong TextChannel { get; set; }
         public bool AnitProfanity { get; set; }
         public bool LogDeletedMessages { get; set; }
         public List<CaseWrapper> Cases { get; set; } = new List<CaseWrapper>();
