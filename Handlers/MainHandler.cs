@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using Hifumi.Services;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,12 +12,14 @@ namespace Hifumi.Handlers
         ConfigHandler ConfigHandler { get; }
         HttpClient HttpClient { get; }
         DiscordSocketClient Client { get; }
+        EventsHandler EventsHandler { get; }
 
-        public MainHandler(ConfigHandler configHandler, HttpClient httpClient, DiscordSocketClient client)
+        public MainHandler(ConfigHandler configHandler, HttpClient httpClient, DiscordSocketClient client, EventsHandler eventsHandler)
         {
             ConfigHandler = configHandler;
             HttpClient = httpClient;
             Client = client;
+            EventsHandler = eventsHandler;
         }
 
         public async Task InitializeAsync()
@@ -39,7 +42,7 @@ namespace Hifumi.Handlers
             }
             catch
             {
-                Console.WriteLine("Could not connect to database."); // TODO: Log?
+                LogService.Write("DATABASE", "Unable to connect to RavenDB server.", ConsoleColor.DarkRed);
                 await Task.Delay(5000);
                 Environment.Exit(Environment.ExitCode);
             }

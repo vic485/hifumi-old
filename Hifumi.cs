@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Hifumi.Handlers;
+using Hifumi.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Raven.Client.Documents;
 using System;
@@ -36,11 +37,15 @@ namespace Hifumi
                     Urls = new[] { "http://localhost:8080" }
                 }.Initialize())
                 .AddSingleton<HttpClient>()
+                .AddSingleton<LogService>()
                 .AddSingleton<MainHandler>()
+                .AddSingleton<GuildHandler>()
                 .AddSingleton<ConfigHandler>()
+                .AddSingleton<EventsHandler>()
                 .AddSingleton(new Random(Guid.NewGuid().GetHashCode()));
 
             var provider = services.BuildServiceProvider();
+            provider.GetRequiredService<LogService>().Initialize();
             await provider.GetRequiredService<MainHandler>().InitializeAsync();
 
             await Task.Delay(-1);

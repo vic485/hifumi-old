@@ -1,5 +1,6 @@
 using HGame;
 using Hifumi.Models;
+using Hifumi.Services;
 using Raven.Client.Documents;
 using System;
 
@@ -24,9 +25,9 @@ namespace Hifumi.Handlers
             using (var session = Store.OpenSession())
             {
                 if (session.Advanced.Exists("Config")) return;
-                Console.Write("Enter bot token: "); // TODO: make nicer?
+                LogService.Write("CONFIG", "Enter bot token: ", ConsoleColor.DarkYellow);
                 string token = Console.ReadLine();
-                Console.Write("Enter bot prefix: ");
+                LogService.Write("CONFIG", "Enter bot prefix: ", ConsoleColor.DarkYellow);
                 string prefix = Console.ReadLine();
                 session.Store(new ConfigModel
                 {
