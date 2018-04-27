@@ -1,7 +1,8 @@
+﻿using Hifumi.Enums;
 using Hifumi.Models;
 using Hifumi.Services;
+using System.Drawing;
 using Raven.Client.Documents;
-using System;
 
 namespace Hifumi.Handlers
 {
@@ -20,7 +21,7 @@ namespace Hifumi.Handlers
         {
             using (var session = Store.OpenSession())
                 session.Delete($"{id}");
-            LogService.Write("DATABASE", string.IsNullOrWhiteSpace(name) ? $"Removed server with ID: {id}" : $"Removed config for {name}", ConsoleColor.DarkRed);
+            LogService.Write(LogSource.EVT, string.IsNullOrWhiteSpace(name) ? $"Removed Server With Id: {id}" : $"Removed Config For {name}", Color.Crimson);
         }
 
         public void AddGuild(ulong id, string name = null)
@@ -35,7 +36,7 @@ namespace Hifumi.Handlers
                 });
                 session.SaveChanges();
             }
-            LogService.Write("DATABASE", string.IsNullOrWhiteSpace(name) ? $"Added server with ID: {id}" : $"Created config for {name}", ConsoleColor.DarkGreen);
+            LogService.Write(LogSource.EVT, string.IsNullOrWhiteSpace(name) ? $"Added Server With Id: {id}" : $"Created Config For {name}", Color.Orange);
         }
 
         public void Save(GuildModel server)

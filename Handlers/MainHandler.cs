@@ -1,9 +1,14 @@
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
+using Hifumi.Enums;
 using Hifumi.Services;
+using Raven.Client.Documents;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CC = System.Drawing.Color;
 
 namespace Hifumi.Handlers
 {
@@ -11,13 +16,15 @@ namespace Hifumi.Handlers
     {
         ConfigHandler ConfigHandler { get; }
         HttpClient HttpClient { get; }
+        IDocumentStore Store { get; }
         DiscordSocketClient Client { get; }
         EventsHandler EventsHandler { get; }
 
-        public MainHandler(ConfigHandler configHandler, HttpClient httpClient, DiscordSocketClient client, EventsHandler eventsHandler)
+        public MainHandler(ConfigHandler configHandler, HttpClient httpClient, EventsHandler eventsHandler, DiscordSocketClient client, IDocumentStore store)
         {
             ConfigHandler = configHandler;
             HttpClient = httpClient;
+            Store = store;
             Client = client;
             EventsHandler = eventsHandler;
         }
@@ -52,15 +59,18 @@ namespace Hifumi.Handlers
         {
             try
             {
-                var raven = await HttpClient.GetAsync("http://localhost:8080/studio/index.html").ConfigureAwait(false);
-                var database = await HttpClient.GetAsync("http://localhost:8080/studio/index.html#databases/documents?&database=Hifumi").ConfigureAwait(false);
-                if (raven.IsSuccessStatusCode || database.IsSuccessStatusCode) ConfigHandler.ConfigCheck();
+                var database = await HttpClient.GetAsync($"{Store.Urls[0]}/studio/index.html#databases/documents?&database=Hifumi");
+                if (!database.IsSuccessStatusCode)
+                {
+                    LogService.Write(LogSource.DTB, "Either RavenDB isn't running or Database 'Hifumi' has not been created.", CC.IndianRed);
+                    await Store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord("Hifumi")));
+                    LogService.Write(LogSource.DTB, "Created Database Hifumi.", CC.ForestGreen);
+                }
             }
-            catch
+            catch { }
+            finally
             {
-                LogService.Write("DATABASE", "Unable to connect to RavenDB server.", ConsoleColor.DarkRed);
-                await Task.Delay(5000);
-                Environment.Exit(Environment.ExitCode);
+                ConfigHandler.ConfigCheck();
             }
         }
     }

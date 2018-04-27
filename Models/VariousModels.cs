@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +8,7 @@ namespace Hifumi.Models
     {
         public bool IsEnabled { get; set; }
         public string LevelMessage { get; set; }
-        public List<ulong> ForbiddenRoles { get; set; } = new List<ulong>();
+        public List<ulong> ForbiddenRoles { get; set; } = new List<ulong>(20);
         public Dictionary<ulong, int> LeveledRoles { get; set; } = new Dictionary<ulong, int>();
     }
 
@@ -44,7 +44,7 @@ namespace Hifumi.Models
         public bool AntiInvite { get; set; }
         public int MaxWarnings { get; set; }
         public ulong TextChannel { get; set; }
-        public bool AnitProfanity { get; set; }
+        public bool AntiProfanity { get; set; }
         public bool LogDeletedMessages { get; set; }
         public List<CaseWrapper> Cases { get; set; } = new List<CaseWrapper>();
     }

@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Hifumi.Addons;
@@ -41,7 +41,7 @@ namespace Hifumi.Helpers
             if (localTask == timeout || connect.IsFaulted) Environment.Exit(1);
             else if (connect.IsCompletedSuccessfully)
             {
-                LogService.Write("DISCORD", "Client reconnected", ConsoleColor.DarkGreen);
+                LogService.Write(Enums.LogSource.DSD, "Client reconnected.", System.Drawing.Color.ForestGreen);
                 return;
             }
             else Environment.Exit(1);
@@ -53,7 +53,7 @@ namespace Hifumi.Helpers
             var blacklistedRoles = new List<ulong>(config.ChatXP.ForbiddenRoles.Select(x => x));
             var hasRole = (user as IGuildUser).RoleIds.Intersect(blacklistedRoles).Any();
             if (hasRole || !config.ChatXP.IsEnabled) return Task.CompletedTask;
-            var profile = GuildHelper.GetProfile(user.Guild.Id, user.Id);
+            var profile = GuildHelper.GetProfile(user.GuildId, user.Id);
             int old = profile.ChatXP;
             profile.ChatXP += Random.Next(message.Content.Length);
             var newer = profile.ChatXP;
@@ -75,7 +75,7 @@ namespace Hifumi.Helpers
             if (!message.MentionedUsers.Any(x => config.AFK.ContainsKey(x.Id))) return;
             string reason = null;
             var user = message.MentionedUsers.FirstOrDefault(u => config.AFK.TryGetValue(u.Id, out reason));
-            if (user != null) await message.Channel.SendMessageAsync($"**{user.Username} has left an AFK message:** {reason}");
+            if (user != null) await message.Channel.SendMessageAsync($"**{user.Username} has left an AFK Message:** {reason}");
         }
 
         internal void RecordCommand(CommandService commandService, IContext context)
@@ -92,7 +92,7 @@ namespace Hifumi.Helpers
         internal async Task ModeratorAsync(SocketUserMessage message, GuildModel config)
         {
             if (GuildHelper.ProfanityMatch(message.Content))
-                await WarnUserAsync(message, config, $"{message.Author.Mention}, refrain from using prfanity. You have been warned.");
+                await WarnUserAsync(message, config, $"{message.Author.Mention}, refrain from using profanity. You have been warned.");
             if (GuildHelper.InviteMatch(message.Content))
                 await WarnUserAsync(message, config, $"{message.Author.Mention}, invite links are not allowed. You have been warned.");
         }
@@ -105,7 +105,7 @@ namespace Hifumi.Helpers
             var profile = GuildHelper.GetProfile(guild.Id, message.Author.Id);
             if (profile.Warnings >= config.Mod.MaxWarnings)
             {
-                await (message.Author as SocketGuildUser).KickAsync("Kicked by AutoMod.");
+                await (message.Author as SocketGuildUser).KickAsync("Kicked By AutoMod.");
                 await guild.GetTextChannel(config.Mod.TextChannel).SendMessageAsync(
                     $"**Kick** | Case {config.Mod.Cases.Count + 1}\n**User:** {message.Author} ({message.Author.Id})\n**Reason:** Reached max warnings.\n" +
                     $"**Responsible Moderator:** {Client.CurrentUser}"

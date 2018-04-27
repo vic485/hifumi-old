@@ -1,8 +1,9 @@
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Hifumi.Addons;
 using static Hifumi.Addons.Embeds;
+using Hifumi.Enums;
 using Hifumi.Helpers;
 using Hifumi.Models;
 using Hifumi.Services;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using CC = System.Drawing.Color;
 
 namespace Hifumi.Handlers
 {
@@ -32,6 +34,7 @@ namespace Hifumi.Handlers
             Client = client;
             Random = random;
             GuildHandler = guildHandler;
+            GuildHelper = guildHelper;
             ConfigHandler = configHandler;
             EventHelper = eventHelper;
             CommandService = commandService;
@@ -46,7 +49,7 @@ namespace Hifumi.Handlers
 
         internal Task Ready() => Task.Run(() =>
         {
-            LogService.Write("READY", "Ready to serve users", ConsoleColor.Green);
+            LogService.Write(LogSource.RDY, "Ready to serve users", CC.GreenYellow);
             Client.SetActivityAsync(new Game(!ConfigHandler.Config.Games.Any() ?
                 $"{ConfigHandler.Config.Prefix}help" : $"{ConfigHandler.Config.Games[Random.Next(ConfigHandler.Config.Games.Count)]}", ActivityType.Playing));
         });
@@ -60,17 +63,17 @@ namespace Hifumi.Handlers
         {
             CancellationToken.Cancel();
             CancellationToken = new CancellationTokenSource();
-            LogService.Write("CONNECTED", "Connected to Discord", ConsoleColor.Blue);
+            LogService.Write(LogSource.CNN, "Connected to Discord", CC.BlueViolet);
             return Task.CompletedTask;
         }
 
-        internal Task Log(LogMessage log) => Task.Run(() => LogService.Write("ERROR", log.Message ?? log.Exception.Message, ConsoleColor.DarkRed));
+        internal Task Log(LogMessage log) => Task.Run(() => LogService.Write(LogSource.EXC, log.Message ?? log.Exception.Message, CC.Crimson));
 
         internal Task Disconnected(Exception error)
         {
             _ = Task.Delay(EventHelper.GlobalTimeout, CancellationToken.Token).ContinueWith(async _ =>
             {
-                LogService.Write("DISCONNECTED", $"Checking connection state...", ConsoleColor.Yellow);
+                LogService.Write(LogSource.DSN, $"Checking connection state...", CC.LightYellow);
                 await EventHelper.CheckStateAsync();
             });
             return Task.CompletedTask;
@@ -101,7 +104,7 @@ namespace Hifumi.Handlers
         internal async Task UserJoinedAsync(SocketGuildUser user)
         {
             var config = GuildHandler.GetGuild(user.Guild.Id);
-            string message = !config.LeaveMessages.Any() ? $"Welcome **{user.Mention}** to the server!"
+            string message = !config.JoinMessages.Any() ? $"Welcome **{user.Mention}** to the server."
                 : StringHelper.Replace(config.JoinMessages[Random.Next(config.JoinMessages.Count)], user.Guild.Name, user.Mention);
             var channel = user.Guild.GetTextChannel(config.JoinChannel);
             if (channel != null) await channel.SendMessageAsync(message).ConfigureAwait(false);
@@ -138,7 +141,7 @@ namespace Hifumi.Handlers
             switch (result.Error)
             {
                 case CommandError.Exception:
-                    LogService.Write("ERROR", result.ErrorReason, ConsoleColor.DarkRed);
+                    LogService.Write(LogSource.EXC, result.ErrorReason, CC.Crimson);
                     break;
                 case CommandError.UnmetPrecondition:
                     // TODO: DM error if we can't send a message?
@@ -171,7 +174,7 @@ namespace Hifumi.Handlers
             var message = await cacheable.GetOrDownloadAsync();
             var config = GuildHandler.GetGuild(guild.Id);
             var starboardChannel = guild.GetTextChannel(config.Starboard.TextChannel) as IMessageChannel;
-            if (message == null || starboardChannel == null | reaction.Channel.Id == config.Starboard.TextChannel) return;
+            if (message == null || starboardChannel == null || reaction.Channel.Id == config.Starboard.TextChannel) return;
             var embed = GetEmbed(Paint.Yellow)
                 .WithAuthor(message.Author.Username, message.Author.GetAvatarUrl())
                 .WithFooter(message.Timestamp.ToString("F"));
@@ -235,6 +238,6 @@ namespace Hifumi.Handlers
         }
 
         internal void UnhandledException(object sender, UnhandledExceptionEventArgs exceptionEventArgs)
-            => LogService.Write("ERROR", $"{exceptionEventArgs.ExceptionObject}", ConsoleColor.DarkRed);
+            => LogService.Write(LogSource.EXC, $"{exceptionEventArgs.ExceptionObject}", CC.IndianRed);
     }
 }

@@ -1,8 +1,10 @@
-using HGame;
+﻿using HGame;
+using Hifumi.Enums;
 using Hifumi.Models;
 using Hifumi.Services;
 using Raven.Client.Documents;
 using System;
+using System.Drawing;
 
 namespace Hifumi.Handlers
 {
@@ -25,9 +27,9 @@ namespace Hifumi.Handlers
             using (var session = Store.OpenSession())
             {
                 if (session.Advanced.Exists("Config")) return;
-                LogService.Write("CONFIG", "Enter bot token: ", ConsoleColor.DarkYellow);
+                LogService.Write(LogSource.CNF, "Enter Bot's Token: ", Color.LightCoral);
                 string token = Console.ReadLine();
-                LogService.Write("CONFIG", "Enter bot prefix: ", ConsoleColor.DarkYellow);
+                LogService.Write(LogSource.CNF, "Enter Bot's Prefix: ", Color.LightCoral);
                 string prefix = Console.ReadLine();
                 session.Store(new ConfigModel
                 {
@@ -39,7 +41,7 @@ namespace Hifumi.Handlers
             }
         }
 
-        public void Save(ConfigModel config)
+        public void Save(ConfigModel config = null)
         {
             config = config ?? Config;
             if (config == null) return;

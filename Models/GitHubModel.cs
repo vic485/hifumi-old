@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Hifumi.Models
 {
@@ -17,6 +17,6 @@ namespace Hifumi.Models
     public partial class GitHubModel
     {
         [JsonProperty("message")]
-        public string message { get; set; }
+        public string Message { get; set; }
     }
 }

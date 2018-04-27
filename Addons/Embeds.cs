@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 
 namespace Hifumi.Addons
 {
@@ -33,16 +33,16 @@ namespace Hifumi.Addons
             }
             return embed;
         }
-    }
 
-    public enum Paint
-    {
-        Lime,
-        Aqua,
-        Rose,
-        Yellow,
-        Crimson,
-        Magenta,
-        PaleYellow
+        public enum Paint
+        {
+            Lime,
+            Aqua,
+            Rose,
+            Yellow,
+            Crimson,
+            Magenta,
+            PaleYellow
+        }
     }
 }

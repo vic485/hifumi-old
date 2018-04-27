@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using Hifumi.Addons;
 using Hifumi.Handlers;
@@ -69,7 +69,8 @@ namespace Hifumi.Helpers
 
         public Task Purge(IEnumerable<IUserMessage> messages, ITextChannel channel, int amount)
             => amount <= 100 ? channel.DeleteMessagesAsync(messages) :
-                Task.Run(() => messages.ToList().ForEach(async XPWrapper => await XPWrapper.DeleteAsync().ConfigureAwait(false)));
+                Task.Run(() => messages.ToList().ForEach(async x => await x.DeleteAsync().ConfigureAwait(false)));
+
 
         public (bool, ulong) GetChannelId(SocketGuild guild, string channel)
         {

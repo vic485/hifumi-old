@@ -1,4 +1,4 @@
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
 using Hifumi.Enums;
 using Newtonsoft.Json.Linq;
@@ -19,9 +19,9 @@ namespace Hifumi.Helpers
         {
             get
             {
-                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "cache")))
-                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "cache"));
-                return Path.Combine(Directory.GetCurrentDirectory(), "cache");
+                if (!Directory.Exists($"{Path.Combine(Directory.GetCurrentDirectory(), "cache")}"))
+                    Directory.CreateDirectory($"{Path.Combine(Directory.GetCurrentDirectory(), "cache")}");
+                return $"{Path.Combine(Directory.GetCurrentDirectory(), "cache")}";
             }
         }
         public static string Normal = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,-./:;<=>?@[\\]^_`{|}~ ";
@@ -32,7 +32,7 @@ namespace Hifumi.Helpers
         {
             var socketClient = client as DiscordSocketClient;
             var user = socketClient.GetUser(userId);
-            return user == null ? "Unkown User." : user.Username;
+            return user == null ? "Unknown User." : user.Username;
         }
 
         public static string CheckRole(SocketGuild guild, ulong id)
@@ -102,22 +102,22 @@ namespace Hifumi.Helpers
                     url = $"https://yande.re/post.xml?limit=25&page={random.Next(0, 15)}&tags={string.Join("+", tags.Select(x => x.Replace(" ", "_")))}";
                     break;
             }
-            var Get = await httpClient.GetStringAsync(url).ConfigureAwait(false);
+            var get = await httpClient.GetStringAsync(url).ConfigureAwait(false);
             switch (nsfwType)
             {
                 case NsfwType.Danbooru:
-                    matches = Regex.Matches(Get, "data-large-file-url=\"(.*)\"");
+                    matches = Regex.Matches(get, "data-large-file-url=\"(.*)\"");
                     break;
                 case NsfwType.Yandere:
                 case NsfwType.Gelbooru:
                 case NsfwType.Rule34:
-                    matches = Regex.Matches(Get, "file_url=\"(.*?)\" ");
+                    matches = Regex.Matches(get, "file_url=\"(.*?)\" ");
                     break;
                 case NsfwType.Cureninja:
-                    matches = Regex.Matches(Get, "\"url\":\"(.*?)\"");
+                    matches = Regex.Matches(get, "\"url\":\"(.*?)\"");
                     break;
                 case NsfwType.Konachan:
-                    matches = Regex.Matches(Get, "<a class=\"directlink smallimg\" href=\"(.*?)\"");
+                    matches = Regex.Matches(get, "<a class=\"directlink smallimg\" href=\"(.*?)\"");
                     break;
             }
             if (!matches.Any()) return "No results found.";

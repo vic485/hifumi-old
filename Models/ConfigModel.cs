@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Hifumi.Models
 {
@@ -11,7 +11,9 @@ namespace Hifumi.Models
         public List<string> Games { get; set; } = new List<string>();
         public List<ulong> UserBlacklist { get; set; } = new List<ulong>();
         public List<ulong> ServerBlacklist { get; set; } = new List<ulong>();
+        public List<string> Namespaces { get; set; } = new List<string>();
         public ulong ReportChannel { get; set; }
-        public Dictionary<string, string> APIKeys { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> APIKeys { get; set; } = new Dictionary<string, string>()
+        { {"Google", "" }, {"osu", "" }, {"Steam", "" }, {"Wows", "" } };
     }
 }

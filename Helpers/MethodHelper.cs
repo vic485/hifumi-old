@@ -1,4 +1,4 @@
-using Hifumi.Models;
+﻿using Hifumi.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Hifumi.Helpers
             => Assembly.GetExecutingAssembly().GetTypes().Where(x => String.Equals(x.Namespace, name, StringComparison.Ordinal)).ToList();
 
         public DateTime UnixDateTime(double unix)
-            => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unix).ToLocalTime();
+            => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unix).ToLocalTime();
 
         public DateTime EasternTime
             => TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, TimeZoneInfo.Local.Id, "Eastern Standard Time");
@@ -39,7 +39,7 @@ namespace Hifumi.Helpers
 
         public async Task<IReadOnlyCollection<GitHubModel>> GetCommitsAsync()
         {
-            HttpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0");
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
             var request = await HttpClient.GetAsync("https://api.github.com/repos/vic485/hifumi/commits");
             if (!request.IsSuccessStatusCode) return null;
             var content = JsonConvert.DeserializeObject<IReadOnlyCollection<GitHubModel>>(await request.Content.ReadAsStringAsync());

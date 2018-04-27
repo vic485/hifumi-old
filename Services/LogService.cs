@@ -1,6 +1,9 @@
+﻿using Hifumi.Enums;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using Console = Colorful.Console;
 
 namespace Hifumi.Services
 {
@@ -16,22 +19,22 @@ namespace Hifumi.Services
         static async Task LogAsync(string message)
             => await File.AppendAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "log.txt"), message + Environment.NewLine);
 
-        static void Append(string text, ConsoleColor color)
+        static void Append(string text, Color color)
         {
             Console.ForegroundColor = color;
             Console.Write(text);
+            Console.ResetColor();
         }
 
-        public static void Write(string source, string text, ConsoleColor color)
+        public static void Write(LogSource source, string text, Color color)
         {
             string date = DateTime.Now.ToShortTimeString().Length <= 4 ?
                 $"0{DateTime.Now.ToShortTimeString()}" : DateTime.Now.ToShortTimeString();
             Console.Write(Environment.NewLine);
-            Append($"-> {date} ", ConsoleColor.DarkGray);
+            Append($"-> {date} ", Color.DarkGray);
             Append($"[{source}]", color);
-            Append($" {text}", ConsoleColor.White);
+            Append($" {text}", Color.WhiteSmoke);
             _ = LogAsync($"[{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")}] [{source}] {text}");
-            Console.ResetColor();
         }
 
         public void PrintApplicationInformation()
@@ -48,11 +51,10 @@ namespace Hifumi.Services
                 @""
             };
 
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
             foreach (string line in header)
-                Console.WriteLine(line);
-            Append("-> INFORMATION\n", ConsoleColor.Red);
-            Append("\tAuthor: vic485\n\tVersion: 2018-Beta-04-25\n", ConsoleColor.Yellow);
+                Append($"{line}\n", Color.DarkMagenta);
+            Append("-> INFORMATION\n", Color.PaleVioletRed);
+            Append("\tAuthor: vic485\n\tVersion: 2018-Beta-04-27\n", Color.LightSalmon);
         }
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Hifumi.Models
 {
@@ -13,8 +13,8 @@ namespace Hifumi.Models
         public XPWrapper ChatXP { get; set; } = new XPWrapper();
         public ModWrapper Mod { get; set; } = new ModWrapper();
         public RedditWrapper Reddit { get; set; } = new RedditWrapper();
-        public List<TagWrapper> Tags = new List<TagWrapper>();
-        public StarboardWrapper Starboard = new StarboardWrapper();
+        public List<TagWrapper> Tags { get; set; } = new List<TagWrapper>();
+        public StarboardWrapper Starboard { get; set; } = new StarboardWrapper();
         public Dictionary<ulong, string> AFK { get; set; } = new Dictionary<ulong, string>();
         public ulong JoinChannel { get; set; }
         public ulong LeaveChannel { get; set; }
