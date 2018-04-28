@@ -18,6 +18,8 @@ namespace Hifumi
 
         async Task InitializeAsync()
         {
+            var database = await DatabaseHandler.LoadDBConfigAsync();
+
             var services = new ServiceCollection()
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
                 {
@@ -34,8 +36,9 @@ namespace Hifumi
                 }))
                 .AddSingleton(new DocumentStore
                 {
-                    Database = "Hifumi",
-                    Urls = new[] { "http://localhost:8080" }
+                    Certificate = database.Certificate2,
+                    Database = database.DatabaseName,
+                    Urls = database.DatabaseUrls
                 }.Initialize())
                 .AddSingleton<HttpClient>()
                 .AddSingleton<LogService>()

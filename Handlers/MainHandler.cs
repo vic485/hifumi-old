@@ -6,6 +6,7 @@ using Raven.Client.Documents;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CC = System.Drawing.Color;
@@ -57,14 +58,14 @@ namespace Hifumi.Handlers
 
         async Task DatabaseCheck()
         {
+            var database = await DatabaseHandler.LoadDBConfigAsync();
             try
             {
-                var database = await HttpClient.GetAsync($"{Store.Urls[0]}/studio/index.html#databases/documents?&database=Hifumi");
-                if (!database.IsSuccessStatusCode)
+                if (!Store.Maintenance.Server.Send(new GetDatabaseNamesOperation(0, 5)).Any(x => x == database.DatabaseName))
                 {
-                    LogService.Write(LogSource.DTB, "Either RavenDB isn't running or Database 'Hifumi' has not been created.", CC.IndianRed);
-                    await Store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord("Hifumi")));
-                    LogService.Write(LogSource.DTB, "Created Database Hifumi.", CC.ForestGreen);
+                    LogService.Write(LogSource.DTB, $"No database named {database.DatabaseName} found! Creating database {database.DatabaseName}...", CC.IndianRed);
+                    await Store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord(database.DatabaseName)));
+                    LogService.Write(LogSource.DTB, $"Created Database {database.DatabaseName}.", CC.ForestGreen);
                 }
             }
             catch { }

@@ -6,6 +6,7 @@
 .vscode/
 
 # Hifumi stuff
+DatabaseConfig.json
 log.txt
 
 [Rr]esources/
