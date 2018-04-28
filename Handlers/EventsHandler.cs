@@ -56,8 +56,14 @@ namespace Hifumi.Handlers
 
         internal Task LeftGuild(SocketGuild guild) => Task.Run(() => GuildHandler.RemoveGuild(guild.Id, guild.Name));
 
-        // TODO: Leave guild if it is blacklisted
-        internal Task GuildAvailable(SocketGuild guild) => Task.Run(() => GuildHandler.AddGuild(guild.Id, guild.Name));
+        internal Task GuildAvailable(SocketGuild guild)
+        {
+            if (!ConfigHandler.Config.ServerBlacklist.Contains(guild.Id))
+                GuildHandler.AddGuild(guild.Id, guild.Name);
+            else
+                guild.LeaveAsync();
+            return Task.CompletedTask;
+        }
 
         internal Task Connected()
         {
@@ -85,10 +91,13 @@ namespace Hifumi.Handlers
 
         internal async Task JoinedGuildAsync(SocketGuild guild)
         {
-            // TODO: leave guild if blacklisted
-            GuildHandler.AddGuild(guild.Id, guild.Name);
-            // TODO: This doesn't work well, add a helper system
-            await guild.DefaultChannel.SendMessageAsync(ConfigHandler.Config.JoinMessage ?? "Thank you for inviting me to your server. Guild prefix is `h!`. Type `h!help` for commands.");
+            if (!ConfigHandler.Config.ServerBlacklist.Contains(guild.Id))
+            {
+                GuildHandler.AddGuild(guild.Id, guild.Name);
+                await GuildHelper.DefaultChannel(guild.Id).SendMessageAsync(ConfigHandler.Config.JoinMessage ?? "Thank you for inviting me to your server. Guild prefix is `h!`. Type `h!help` for commands.");
+            }
+            else
+                await guild.LeaveAsync();
         }
 
         internal async Task UserLeftAsync(SocketGuildUser user)

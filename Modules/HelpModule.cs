@@ -30,7 +30,6 @@ namespace Hifumi.Modules
             return ReplyAsync(string.Empty, Embed.Build());
         }
 
-
         [Command("info"), Alias("help"), Summary("Shows more information about a command and it's usage.")]
         public Task CommandInfo([Remainder] string CommandName)
         {
