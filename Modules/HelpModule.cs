@@ -20,7 +20,7 @@ namespace Hifumi.Modules
         }
 
         [Command("help"), Summary("Displays all of the commands.")]
-        public Task CommandsAsync()
+        public Task Help()
         {
             var Embed = GetEmbed(Paint.Aqua)
                 .WithAuthor("List of all commands", Context.Client.CurrentUser.GetAvatarUrl())
@@ -32,7 +32,7 @@ namespace Hifumi.Modules
 
 
         [Command("info"), Alias("help"), Summary("Shows more information about a command and it's usage.")]
-        public Task CommandInfoAsync([Remainder] string CommandName)
+        public Task CommandInfo([Remainder] string CommandName)
         {
             var Command = CommandService.Search(Context, CommandName).Commands?.FirstOrDefault().Command;
             if (Command == null) return ReplyAsync($"{CommandName} command doesn't exist.");
@@ -50,5 +50,8 @@ namespace Hifumi.Modules
             if (GetEnum.Any()) Embed.AddField($"{GetEnum.FirstOrDefault()?.Name} Values", string.Join(", ", GetEnum?.FirstOrDefault().Type.GetEnumNames()));
             return ReplyAsync(string.Empty, Embed.Build());
         }
+
+        [Command("support"), Summary("Provides a link to Hifumi's support server")]
+        public Task Support() => ReplyAsync("Need help with Hifumi? Join the support server:\nhttps://discord.gg/jqpcmev");
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Hifumi.Modules
 {
-    [Name("Game Commands")]
+    [Name("Game Commands"), RequireBotPermission(ChannelPermission.SendMessages)]
     public class GamesModule : Base
     {
         [Command("steam"), Summary("Show a user's steam profile.")]
