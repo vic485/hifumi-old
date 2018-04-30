@@ -25,8 +25,8 @@ namespace Hifumi.Modules
             var Embed = GetEmbed(Paint.Aqua)
                 .WithAuthor("List of all commands", Context.Client.CurrentUser.GetAvatarUrl())
                 .WithFooter($"For More Information On A Command's Usage: {Context.Config.Prefix}info <command>", Emotes.Hifumi.Url);
-            foreach (var Commands in CommandService.Commands.GroupBy(x => x.Module.Name).OrderBy(y => y.Key))
-                Embed.AddField(Commands.Key, string.Join(", ", Commands.Select(x => x.Name).Distinct()));
+            foreach (var Commands in CommandService.Commands.Where(x => x.Module.Name != "Owner Commands").GroupBy(x => x.Module.Name).OrderBy(y => y.Key))
+                Embed.AddField(Commands.Key, $"`{string.Join("`, `", Commands.Select(x => x.Name).Distinct())}`");
             return ReplyAsync(string.Empty, Embed.Build());
         }
 

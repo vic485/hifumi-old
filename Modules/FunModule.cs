@@ -18,5 +18,7 @@ namespace Hifumi.Modules
             await Context.Message.DeleteAsync();
             await ReplyAsync($"👏 {message.Replace(" ", " 👏 ")} 👏");
         }
+
+        // TODO: more commands
     }
 }
