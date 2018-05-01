@@ -6,6 +6,8 @@ using static Hifumi.Addons.Embeds;
 using Hifumi.Enums;
 using Hifumi.Helpers;
 using Hifumi.Models;
+using Hifumi.Personality;
+using static Hifumi.Personality.Emotes;
 using Hifumi.Services;
 using System;
 using System.Linq;
@@ -103,8 +105,7 @@ namespace Hifumi.Handlers
         internal async Task UserLeftAsync(SocketGuildUser user)
         {
             var config = GuildHandler.GetGuild(user.Guild.Id);
-            // TODO: personality to default message
-            string message = !config.LeaveMessages.Any() ? $"**{user.Username}** left the server."
+            string message = !config.LeaveMessages.Any() ? $"**{user.Username}** left the server. {GetEmote(EmoteType.Sad)}"
                 : StringHelper.Replace(config.LeaveMessages[Random.Next(config.LeaveMessages.Count)], user.Guild.Name, user.Username);
             var channel = user.Guild.GetTextChannel(config.LeaveChannel);
             if (channel != null) await channel.SendMessageAsync(message).ConfigureAwait(false);
@@ -113,7 +114,7 @@ namespace Hifumi.Handlers
         internal async Task UserJoinedAsync(SocketGuildUser user)
         {
             var config = GuildHandler.GetGuild(user.Guild.Id);
-            string message = !config.JoinMessages.Any() ? $"Welcome **{user.Mention}** to the server."
+            string message = !config.JoinMessages.Any() ? $"Welcome **{user.Mention}** to the server. {GetEmote(EmoteType.Happy)}"
                 : StringHelper.Replace(config.JoinMessages[Random.Next(config.JoinMessages.Count)], user.Guild.Name, user.Mention);
             var channel = user.Guild.GetTextChannel(config.JoinChannel);
             if (channel != null) await channel.SendMessageAsync(message).ConfigureAwait(false);

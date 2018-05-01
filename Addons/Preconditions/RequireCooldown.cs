@@ -1,11 +1,9 @@
 using Discord.Commands;
 using Hifumi.Helpers;
+using Hifumi.Personality;
+using static Hifumi.Personality.Emotes;
 using System;
 using System.Threading.Tasks;
-
-using Hifumi.Enums;
-using Hifumi.Services;
-using System.Drawing;
 
 namespace Hifumi.Addons.Preconditions
 {
@@ -26,7 +24,7 @@ namespace Hifumi.Addons.Preconditions
 
             var wait = cool - passed;
             // TODO: personality and don't send minutes if there are none
-            return Task.FromResult(PreconditionResult.FromError($"Please wait {wait.Minutes} minute(s) and {wait.Seconds} second(s)."));
+            return Task.FromResult(PreconditionResult.FromError($"Please wait {wait.Minutes} minute(s) and {wait.Seconds} second(s). {GetEmote(EmoteType.Sad)}")); // TODO: maybe not sad but something similar?
         }
     }
 }
