@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Commands;
 using Hifumi.Addons;
+using Hifumi.Addons.Preconditions;
 using System;
 using System.Threading.Tasks;
 
@@ -17,5 +18,8 @@ namespace Hifumi.Modules
             Environment.Exit(Environment.ExitCode);
             return Task.CompletedTask;
         }
+
+        [Command("testing"), RequireCooldown(120)]
+        public Task TestCommand() => ReplyAsync("Ran test command");
     }
 }

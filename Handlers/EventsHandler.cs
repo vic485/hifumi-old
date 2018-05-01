@@ -157,7 +157,7 @@ namespace Hifumi.Handlers
                     if (!result.ErrorReason.Contains("SendMessages")) await context.Channel.SendMessageAsync(result.ErrorReason);
                     break;
             }
-            _ = Task.Run(() => EventHelper.RecordCommand(CommandService, context));
+            _ = Task.Run(() => EventHelper.RecordCommand(CommandService, context, argPos));
         }
 
         internal async Task MessageDeletedAsync(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel channel)

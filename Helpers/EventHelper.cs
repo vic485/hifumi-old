@@ -78,14 +78,14 @@ namespace Hifumi.Helpers
             if (user != null) await message.Channel.SendMessageAsync($"**{user.Username} has left an AFK Message:** {reason}");
         }
 
-        internal void RecordCommand(CommandService commandService, IContext context)
+        internal void RecordCommand(CommandService commandService, IContext context, int argPos)
         {
-            var search = commandService.Search(context, 0);
+            var search = commandService.Search(context, argPos);
             if (!search.IsSuccess) return;
             var command = search.Commands.FirstOrDefault().Command;
             var profile = GuildHelper.GetProfile(context.Guild.Id, context.User.Id);
-            if (!profile.Commands.ContainsKey(command.Name)) profile.Commands.Add(command.Name, 0);
-            profile.Commands[command.Name]++;
+            if (!profile.Commands.ContainsKey(command.Name)) profile.Commands.Add(command.Name, DateTime.UtcNow);
+            profile.Commands[command.Name] = DateTime.UtcNow;
             GuildHelper.SaveProfile(context.Guild.Id, context.User.Id, profile);
         }
 

@@ -86,7 +86,7 @@ namespace Hifumi.Models
         public bool IsBlacklisted { get; set; }
         public DateTime? LastMessage { get; set; }
         public DateTime? DailyReward { get; set; }
-        public Dictionary<string, int> Commands { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, DateTime> Commands { get; set; } = new Dictionary<string, DateTime>();
     }
 
     public class MessageWrapper
