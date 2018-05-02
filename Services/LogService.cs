@@ -2,22 +2,20 @@
 using System;
 using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
 using Console = Colorful.Console;
 
 namespace Hifumi.Services
 {
     public class LogService
     {
-        public void Initialize()
-        {
-            string logPath = Path.Combine(Directory.GetCurrentDirectory(), "log.txt");
-            if (!File.Exists(logPath)) File.Create(logPath);
-            PrintApplicationInformation();
-        }
+        readonly static object lockObject = new object();
 
-        static async Task LogAsync(string message)
-            => await File.AppendAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "log.txt"), message + Environment.NewLine);
+        static void FileLog(string message)
+        {
+            lock (lockObject)
+                using (var writer = File.AppendText($"{Directory.GetCurrentDirectory()}/log.txt"))
+                    writer.WriteLine(message);
+        }
 
         static void Append(string text, Color color)
         {
@@ -34,7 +32,7 @@ namespace Hifumi.Services
             Append($"-> {date} ", Color.DarkGray);
             Append($"[{source}]", color);
             Append($" {text}", Color.WhiteSmoke);
-            _ = LogAsync($"[{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")}] [{source}] {text}");
+            FileLog($"[{DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")}] [{source}] {text}");
         }
 
         public void PrintApplicationInformation()
@@ -53,8 +51,11 @@ namespace Hifumi.Services
 
             foreach (string line in header)
                 Append($"{line}\n", Color.DarkMagenta);
-            Append("-> INFORMATION\n", Color.PaleVioletRed);
-            Append("\tAuthor: vic485\n\tVersion: 2018-Beta-04-27\n", Color.LightSalmon);
+            Append("-> INFORMATION\n", Color.Crimson);
+            Append("\tAuthor: vic485\n\tVersion: 2018-Beta-04-27\n", Color.Bisque);
+            Append("-> PACKAGES\n", Color.Crimson);
+            Append($"\tDiscord: {Discord.DiscordConfig.Version}\n\tRavenDB: {Raven.Client.Properties.RavenVersionAttribute.Instance.FullVersion}\n", Color.Bisque);
+            FileLog($"\n\n=================================[ {DateTime.Now} ]=================================\n\n");
         }
     }
 }

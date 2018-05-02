@@ -246,8 +246,5 @@ namespace Hifumi.Handlers
             }
             GuildHandler.Save(config);
         }
-
-        internal void UnhandledException(object sender, UnhandledExceptionEventArgs exceptionEventArgs)
-            => LogService.Write(LogSource.EXC, $"{exceptionEventArgs.ExceptionObject}", CC.IndianRed);
     }
 }

@@ -18,8 +18,6 @@ namespace Hifumi
 
         async Task InitializeAsync()
         {
-            var database = await DatabaseHandler.LoadDBConfigAsync();
-
             var services = new ServiceCollection()
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
                 {
@@ -36,9 +34,9 @@ namespace Hifumi
                 }))
                 .AddSingleton(new DocumentStore
                 {
-                    Certificate = database.Certificate2,
-                    Database = database.DatabaseName,
-                    Urls = database.DatabaseUrls
+                    Certificate = DatabaseHandler.DatabaseConfig.Certificate,
+                    Database = DatabaseHandler.DatabaseConfig.DatabaseName,
+                    Urls = DatabaseHandler.DatabaseConfig.DatabaseUrls
                 }.Initialize())
                 .AddSingleton<HttpClient>()
                 .AddSingleton<LogService>()
@@ -50,10 +48,12 @@ namespace Hifumi
                 .AddSingleton<RedditService>()
                 .AddSingleton<MethodHelper>()
                 .AddSingleton<EventsHandler>()
+                .AddSingleton<DatabaseHandler>()
                 .AddSingleton(new Random(Guid.NewGuid().GetHashCode()));
 
             var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<LogService>().Initialize();
+            provider.GetRequiredService<LogService>().PrintApplicationInformation();
+            await provider.GetRequiredService<DatabaseHandler>().DatabaseCheck();
             await provider.GetRequiredService<MainHandler>().InitializeAsync();
             await provider.GetRequiredService<EventsHandler>().InitializeAsync(provider);
 

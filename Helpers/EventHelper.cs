@@ -91,9 +91,9 @@ namespace Hifumi.Helpers
 
         internal async Task ModeratorAsync(SocketUserMessage message, GuildModel config)
         {
-            if (GuildHelper.ProfanityMatch(message.Content))
+            if (GuildHelper.ProfanityMatch(message.Content) && config.Mod.AntiProfanity)
                 await WarnUserAsync(message, config, $"{message.Author.Mention}, refrain from using profanity. You have been warned.");
-            if (GuildHelper.InviteMatch(message.Content))
+            if (GuildHelper.InviteMatch(message.Content) && config.Mod.AntiInvite)
                 await WarnUserAsync(message, config, $"{message.Author.Mention}, invite links are not allowed. You have been warned.");
         }
 

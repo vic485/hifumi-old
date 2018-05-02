@@ -69,7 +69,10 @@ namespace Hifumi.Helpers
 
         public Task Purge(IEnumerable<IUserMessage> messages, ITextChannel channel, int amount)
             => amount <= 100 ? channel.DeleteMessagesAsync(messages) :
-                Task.Run(() => messages.ToList().ForEach(async x => await x.DeleteAsync().ConfigureAwait(false)));
+                Task.Run(() =>
+                {
+                    for (int i = 0; i < messages.ToArray().Length; i += 100) channel.DeleteMessagesAsync(messages.Skip(i).Take(100));
+                });
 
 
         public (bool, ulong) GetChannelId(SocketGuild guild, string channel)
