@@ -19,7 +19,10 @@ namespace Hifumi.Modules
             return Task.CompletedTask;
         }
 
-        [Command("testing"), RequireCooldown(120)]
+        [Command("cooltest"), RequireCooldown(120)]
         public Task TestCommand() => ReplyAsync("Ran test command");
+
+        [Command("channeltest")]
+        public Task ChannelTest() => ReplyAsync($"Default channel is: {Context.GuildHelper.DefaultChannel(Context.Guild.Id).Name}");
     }
 }
