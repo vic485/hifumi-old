@@ -50,7 +50,7 @@ namespace Hifumi.Modules
         public async Task NekoAsync()
         {
             var embed = GetEmbed(Paint.Aqua)
-                .WithImageUrl(JToken.Parse(await Context.HttpClient.GetStringAsync("http://nekos.life/api/v2/img/neko").ConfigureAwait(false))["url"].ToString())
+                .WithImageUrl(JToken.Parse(await Context.HttpClient.GetStringAsync("https://nekos.life/api/v2/img/neko").ConfigureAwait(false))["url"].ToString())
                 .WithFooter("Powered by: nekos.life")
                 .Build();
             await ReplyAsync(string.Empty, embed);
