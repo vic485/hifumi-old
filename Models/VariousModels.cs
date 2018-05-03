@@ -46,6 +46,7 @@ namespace Hifumi.Models
         public ulong TextChannel { get; set; }
         public bool AntiProfanity { get; set; }
         public bool LogDeletedMessages { get; set; }
+        public List<ulong> MutedUsers { get; set; } = new List<ulong>();
         public List<CaseWrapper> Cases { get; set; } = new List<CaseWrapper>();
     }
 

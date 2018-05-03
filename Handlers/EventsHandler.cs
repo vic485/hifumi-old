@@ -120,7 +120,11 @@ namespace Hifumi.Handlers
             if (channel != null) await channel.SendMessageAsync(message).ConfigureAwait(false);
             var role = user.Guild.GetRole(config.Mod.JoinRole);
             if (role != null) await user.AddRoleAsync(role).ConfigureAwait(false);
-            // TODO: Re-mute users who try to leave and rejoin to bypass
+            if (config.Mod.MutedUsers.Contains(user.Id))
+            {
+                var muteRole = user.Guild.GetRole(config.Mod.MuteRole);
+                await user.AddRoleAsync(muteRole).ConfigureAwait(false);
+            }
         }
 
         internal Task HandleMessage(SocketMessage message)
