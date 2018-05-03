@@ -2,6 +2,7 @@ using Discord;
 using Discord.Commands;
 using Hifumi.Addons;
 using static Hifumi.Addons.Embeds;
+using Hifumi.Addons.Preconditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Hifumi.Modules
     [Name("Game Commands"), RequireBotPermission(ChannelPermission.SendMessages)]
     public class GamesModule : Base
     {
-        [Command("osu"), Summary("Show a user's osu stats.")]
+        [Command("osu"), RequireCooldown(30), Summary("Show a user's osu stats.")]
         public async Task OsuAsync()
         {
             int mode;
@@ -92,7 +93,7 @@ namespace Hifumi.Modules
             }
         }
 
-        [Command("steam"), Summary("Show a user's steam profile.")]
+        [Command("steam"), RequireCooldown(15), Summary("Show a user's steam profile.")]
         public async Task SteamAsync(string userId)
         {
             var userInfo = await Context.ConfigHandler.HGame.Steam.GetUsersInfoAsync(new[] { userId }.ToList());
@@ -122,7 +123,7 @@ namespace Hifumi.Modules
             await ReplyAsync(string.Empty, embed.Build());
         }
 
-        [Command("wows"), Summary("Show a user's profile for World of Warships.")]
+        [Command("wows"), RequireCooldown(30), Summary("Show a user's profile for World of Warships.")]
         public async Task WowsAsync() // TODO: image sharp
         {
             HGame.Wows.Region region;

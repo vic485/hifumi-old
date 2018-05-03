@@ -24,7 +24,7 @@ namespace Hifumi.Addons.Preconditions
 
             var wait = cool - passed;
             // TODO: personality and don't send minutes if there are none
-            return Task.FromResult(PreconditionResult.FromError($"Please wait {wait.Minutes} minute(s) and {wait.Seconds} second(s). {GetEmote(EmoteType.Sad)}")); // TODO: maybe not sad but something similar?
+            return Task.FromResult(PreconditionResult.FromError($"Too fast!  {GetEmote(EmoteType.Worried)} Please wait {wait.Minutes} minute(s) and {wait.Seconds} second(s)."));
         }
     }
 }

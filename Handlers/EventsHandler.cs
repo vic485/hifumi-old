@@ -129,7 +129,7 @@ namespace Hifumi.Handlers
             var config = GuildHandler.GetGuild(guild.Id);
             if (!(message is SocketUserMessage userMessage) || !(message.Author is SocketGuildUser user)) return Task.CompletedTask;
             if (userMessage.Source != MessageSource.User || userMessage.Author.IsBot || ConfigHandler.Config.UserBlacklist.Contains(user.Id) ||
-                GuildHelper.GetProfile(guild.Id, userMessage.Author.Id).IsBlacklisted) return Task.CompletedTask;
+                ConfigHandler.Config.ServerBlacklist.Contains(guild.Id) || GuildHelper.GetProfile(guild.Id, userMessage.Author.Id).IsBlacklisted) return Task.CompletedTask;
 
             _ = EventHelper.XPHandler(userMessage, config);
             _ = EventHelper.ModeratorAsync(userMessage, config);
@@ -145,7 +145,7 @@ namespace Hifumi.Handlers
             var context = new IContext(Client, userMessage, ServiceProvider);
             if (!(userMessage.HasStringPrefix(context.Config.Prefix, ref argPos) || userMessage.HasStringPrefix(context.Server.Prefix, ref argPos) ||
                 userMessage.HasMentionPrefix(Client.CurrentUser, ref argPos)) || userMessage.Source != MessageSource.User || userMessage.Author.IsBot) return;
-            if (context.Config.UserBlacklist.Contains(userMessage.Author.Id) || GuildHelper.GetProfile(context.Guild.Id, context.User.Id).IsBlacklisted) return;
+            if (context.Config.UserBlacklist.Contains(userMessage.Author.Id) || ConfigHandler.Config.ServerBlacklist.Contains(context.Guild.Id) || GuildHelper.GetProfile(context.Guild.Id, context.User.Id).IsBlacklisted) return;
             var result = await CommandService.ExecuteAsync(context, argPos, ServiceProvider, MultiMatchHandling.Best);
             CommandExecuted = result.IsSuccess;
             switch (result.Error)

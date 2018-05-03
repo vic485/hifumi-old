@@ -30,6 +30,9 @@ namespace Hifumi.Addons
                 case Paint.PaleYellow:
                     embed.Color = new Color(255, 245, 207);
                     break;
+                case Paint.Pink:
+                    embed.Color = new Color(237, 116, 170);
+                    break;
             }
             return embed;
         }
@@ -42,7 +45,9 @@ namespace Hifumi.Addons
             Yellow,
             Crimson,
             Magenta,
-            PaleYellow
+            PaleYellow,
+            // Final Colors
+            Pink
         }
     }
 }
