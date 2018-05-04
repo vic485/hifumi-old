@@ -48,9 +48,9 @@ namespace Hifumi.Helpers
         }
 
         internal Task XPHandler(SocketMessage message, GuildModel config)
-        {
+        { // TODO: modify
             var user = message.Author as IGuildUser;
-            var blacklistedRoles = new List<ulong>(config.ChatXP.ForbiddenRoles.Select(x => x));
+            var blacklistedRoles = new List<ulong>(config.ChatXP.XPBlockedRoles.Select(x => x));
             var hasRole = (user as IGuildUser).RoleIds.Intersect(blacklistedRoles).Any();
             if (hasRole || !config.ChatXP.IsEnabled) return Task.CompletedTask;
             var profile = GuildHelper.GetProfile(user.GuildId, user.Id);

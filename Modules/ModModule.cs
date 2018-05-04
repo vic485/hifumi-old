@@ -44,20 +44,18 @@ namespace Hifumi.Modules
         }
 
         [Command("blacklist"), Summary("Prevent a user from using Hifumi's features in your guild.")]
-        public Task Blacklist(string action, IGuildUser user)
+        public Task Blacklist(AdminCollectionAction action, IGuildUser user)
         {
             if (user.IsBot) return Task.CompletedTask;
             var profile = Context.GuildHelper.GetProfile(Context.Guild.Id, user.Id);
-            switch (action.ToLower())
+            switch (action)
             {
-                case "a":
-                case "action":
+                case AdminCollectionAction.Add:
                     if (profile.IsBlacklisted) return ReplyAsync($"{user} is already blacklisted.");
                     profile.IsBlacklisted = true;
                     Context.GuildHelper.SaveProfile(Context.Guild.Id, user.Id, profile);
                     return ReplyAsync($"{user} has been blacklisted.");
-                case "r":
-                case "remove":
+                case AdminCollectionAction.Remove:
                     if (!profile.IsBlacklisted) return ReplyAsync($"{user} isn't blacklisted.");
                     profile.IsBlacklisted = false;
                     Context.GuildHelper.SaveProfile(Context.Guild.Id, user.Id, profile);
@@ -66,7 +64,7 @@ namespace Hifumi.Modules
             return Task.CompletedTask;
         }
 
-        [Command("Kick"), Summary("Kicks a user out of the server."), RequireBotPermission(GuildPermission.KickMembers)]
+        [Command("kick"), Summary("Kicks a user out of the server."), RequireBotPermission(GuildPermission.KickMembers)]
         public async Task KickAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user == await Context.Guild.GetCurrentUserAsync()) return;

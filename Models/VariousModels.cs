@@ -8,7 +8,7 @@ namespace Hifumi.Models
     {
         public bool IsEnabled { get; set; }
         public string LevelMessage { get; set; }
-        public List<ulong> ForbiddenRoles { get; set; } = new List<ulong>(20);
+        public List<ulong> XPBlockedRoles { get; set; } = new List<ulong>(20);
         public Dictionary<ulong, int> LeveledRoles { get; set; } = new Dictionary<ulong, int>();
     }
 

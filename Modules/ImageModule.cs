@@ -14,7 +14,7 @@ namespace Hifumi.Modules
     public class ImageModule : Base
     {
         // Endpoints
-        // /api/v2/img/<'tickle', 'feed', 'kiss', 'cuddle', 'hug'>
+        // /api/v2/img/<'tickle', 'feed', 'kiss', 'hug'>
         [Command("cuddle")]
         public async Task CuddleAsync(SocketGuildUser user = null)
         {

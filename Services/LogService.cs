@@ -55,7 +55,7 @@ namespace Hifumi.Services
             Append("\tAuthor: vic485\n\tVersion: 2018-Beta-04-27\n", Color.Bisque);
             Append("-> PACKAGES\n", Color.Crimson);
             Append($"\tDiscord: {Discord.DiscordConfig.Version}\n\tRavenDB: {Raven.Client.Properties.RavenVersionAttribute.Instance.FullVersion}\n", Color.Bisque);
-            FileLog($"\n\n=================================[ {DateTime.Now} ]=================================\n\n");
+            FileLog($"\n\n=================================[ {DateTime.Now.ToString("MM/dd/yyy HH:mm:ss")} ]=================================\n\n");
         }
     }
 }
