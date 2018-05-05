@@ -20,7 +20,7 @@ namespace Hifumi.Modules
     public class AdminModule : Base
     {
         [Command("blockxp"), Summary("Prevent a role from gaining chat XP.")]
-        public Task BlockXP(AdminCollectionAction action, IRole role)
+        public Task BlockXP(AdminCollectionAction action, [Remainder] IRole role)
         {
             if (role == Context.Guild.EveryoneRole) return ReplyAsync($"Role can't be everyone role.");
             var check = Context.GuildHelper.ListCheck(Context.Server.ChatXP.XPBlockedRoles, role.Id, role.Name, "XP-blocked roles");
@@ -36,6 +36,17 @@ namespace Hifumi.Modules
                     return ReplyAsync($"`{role}` has been removed from the XP-blocked roles.", document: DocumentType.Server);
             }
             return Task.CompletedTask;
+        }
+
+        [Command("blockxp"), Summary("Show all roles that are blocked from gaining chat XP.")]
+        public Task BlockXP()
+        {
+            if (!Context.Server.ChatXP.XPBlockedRoles.Any())
+                return ReplyAsync($"{Context.Guild} has no XP blocked roles.");
+            string message = $"**__XP Blocked Roles__**";
+            foreach (var role in Context.Server.ChatXP.XPBlockedRoles)
+                message += $"\n{StringHelper.CheckRole(Context.Guild as SocketGuild, role)}";
+            return ReplyAsync(message);
         }
 
         [Command("export"), Summary("Exports your server settings as a json file.")]
@@ -71,6 +82,17 @@ namespace Hifumi.Modules
             return Task.CompletedTask;
         }
 
+        [Command("joinmessage"), Summary("Shows all join messages for this server.")]
+        public Task JoinMessage()
+        {
+            if (!Context.Server.JoinMessages.Any())
+                return ReplyAsync($"{Context.Guild} doesn't have any user join messages.");
+            string ret = $"**__Join Messages__**";
+            foreach (string message in Context.Server.JoinMessages)
+                ret += $"\n-> {message}";
+            return ReplyAsync(ret);
+        }
+
         [Command("leavemessage"), Summary("Add/Remove leave message. {user} to print user name. {guild} to print server name.")]
         public Task LeaveMessage(AdminCollectionAction action, [Remainder] string message = null)
         {
@@ -88,6 +110,17 @@ namespace Hifumi.Modules
             return Task.CompletedTask;
         }
 
+        [Command("leavemessage"), Summary("Shows all join messages for this server.")]
+        public Task LeaveMessage()
+        {
+            if (!Context.Server.LeaveMessages.Any())
+                return ReplyAsync($"{Context.Guild} doesn't have any user leave messages.");
+            string ret = $"**__Leave Messages__**";
+            foreach (string message in Context.Server.LeaveMessages)
+                ret += $"\n-> {message}";
+            return ReplyAsync(ret);
+        }
+
         [Command("levelrole"), Summary("Adds/Removes a leveled role")]
         public Task LevelRole(AdminCollectionAction action, IRole role, int level = 10)
         {
@@ -99,7 +132,7 @@ namespace Hifumi.Modules
                     if (Context.Server.ChatXP.LeveledRoles.Count == 20) return ReplyAsync("You have reached the max number of leveled roles.");
                     else if (Context.Server.ChatXP.LeveledRoles.ContainsKey(role.Id)) return ReplyAsync($"{role} is already a leveled role.");
                     Context.Server.ChatXP.LeveledRoles.Add(role.Id, level);
-                    return ReplyAsync($"Added `{role}` role as a leved role.", document: DocumentType.Server);
+                    return ReplyAsync($"Added `{role}` role as a leveled role.", document: DocumentType.Server);
                 case AdminCollectionAction.Remove:
                     if (!Context.Server.ChatXP.LeveledRoles.ContainsKey(role.Id)) return ReplyAsync($"{role} isn't a leveled role.");
                     Context.Server.ChatXP.LeveledRoles.Remove(role.Id);
@@ -111,6 +144,49 @@ namespace Hifumi.Modules
 
             }
             return Task.CompletedTask;
+        }
+
+        [Command("levelrole"), Summary("Shows all leveled roles for this server.")]
+        public Task LevelRole()
+        {
+            if (!Context.Server.ChatXP.LeveledRoles.Any())
+                return ReplyAsync($"{Context.Guild} has no leveled roles.");
+            string message = "**__Leveled Roles__**";
+            foreach (var role in Context.Server.ChatXP.LeveledRoles.Keys)
+                message += $"\n{Context.Server.ChatXP.LeveledRoles[role]} | {StringHelper.CheckRole(Context.Guild as SocketGuild, role)}";
+            return ReplyAsync(message);
+        }
+
+        [Command("messagelog"), Summary("Retrieves messages from deleted messages.")]
+        public Task MessageLog(int old = -1)
+        {
+            if (!Context.Server.DeletedMessages.Any())
+                return ReplyAsync("Failed to retrieve deleted messages.");
+            var getMessage = old < 0 ? Context.Server.DeletedMessages.LastOrDefault() : Context.Server.DeletedMessages[old];
+            var user = StringHelper.CheckUser(Context.Client, getMessage.AuthorId);
+            var getUser = (Context.Client as DiscordSocketClient).GetUser(getMessage.AuthorId);
+            var embed = GetEmbed(Paint.Aqua)
+                .WithAuthor($"{user} - {getMessage.DateTime}", getUser != null ? getUser.GetAvatarUrl() : Context.Client.CurrentUser.GetAvatarUrl())
+                .WithDescription(getMessage.Content)
+                .WithFooter($"Channel: {StringHelper.CheckChannel(Context.Guild as SocketGuild, getMessage.ChannelId)} | Message Id: {getMessage.MessageId}")
+                .Build();
+            return ReplyAsync(string.Empty, embed);
+        }
+
+        [Command("messagelog"), Summary("Retrieves messages from deleted messages.")]
+        public Task MessageLog(SocketGuildUser user = null, int recent = -1)
+        {
+            user = user ?? Context.User as SocketGuildUser;
+            if (!Context.Server.DeletedMessages.Any(x => x.AuthorId == user.Id)) return ReplyAsync($"Couldn't find any deleted messages from {user.Username}.");
+            var getMessage = recent < 0 ? Context.Server.DeletedMessages.Where(x => x.AuthorId == user.Id).LastOrDefault()
+                : Context.Server.DeletedMessages.Where(x => x.AuthorId == user.Id).ToList()[recent];
+            var getUser = (Context.Client as DiscordSocketClient).GetUser(getMessage.AuthorId);
+            var embed = GetEmbed(Paint.Aqua)
+                .WithAuthor($"{user} - {getMessage.DateTime}", getUser != null ? getUser.GetAvatarUrl() : Context.Client.CurrentUser.GetAvatarUrl())
+                .WithDescription(getMessage.Content)
+                .WithFooter($"Channel: {StringHelper.CheckChannel(Context.Guild as SocketGuild, getMessage.ChannelId)} | Message Id: {getMessage.MessageId}")
+                .Build();
+            return ReplyAsync(string.Empty, embed);
         }
 
         [Command("reset"), Summary("Resets your server configuration.")]
@@ -251,6 +327,30 @@ namespace Hifumi.Modules
                     .Build();
             return ReplyAsync(string.Empty, embed);
         }
+
+        [Command("subreddit"), Summary("Add or remove subreddit.")]
+        public Task Subreddit(AdminCollectionAction action, string subreddit)
+        {
+            var check = Context.GuildHelper.ListCheck(Context.Server.Reddit.Subreddits, subreddit, subreddit, "server's subreddits");
+            switch (action)
+            {
+                case AdminCollectionAction.Add:
+                    if (!check.Item1) return ReplyAsync(check.Item2);
+                    // TODO: check if subreddit is valid
+                    Context.Server.Reddit.Subreddits.Add(subreddit);
+                    return ReplyAsync(check.Item2, document: DocumentType.Server);
+                case AdminCollectionAction.Remove:
+                    if (!Context.Server.Reddit.Subreddits.Contains(subreddit)) return ReplyAsync($"You aren't subbed to {subreddit}.");
+                    Context.Server.Reddit.Subreddits.Remove(subreddit);
+                    return ReplyAsync($"Removed {subreddit} from server's subreddits.", document: DocumentType.Server);
+            }
+            return Task.CompletedTask;
+        }
+
+        [Command("subreddit"), Summary("Shows all the subreddits this server is subbed to.")]
+        public Task Subreddit()
+            => ReplyAsync(!Context.Server.Reddit.Subreddits.Any() ? "This server isn't subscribed to any subreddits." :
+                $"**__Server Subreddits__**\n{string.Join("\n", Context.Server.Reddit.Subreddits)}");
 
         [Command("toggle"), Summary("Changes server setting values.")]
         public Task Toggle(ToggleType toggle)
